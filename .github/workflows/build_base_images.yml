@@ -1,0 +1,41 @@
+name: Build and Test WATonomous Monorepo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_base_images:
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - CUDA_VERSION: "12.0.1"
+            ROS_DISTRO: "humble"
+            UBUNTU_DISTRO: "ubuntu22.04"
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_REPO: 
+      DOCKER_TEMPLATE_PATH: wato_base_template.Dockerfile
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Set up Docker Buildx
+        if: inputs.building
+        uses: docker/setup-buildx-action@v3
+        id: buildx
+        with:
+          platforms: ${{ inputs.platform }}
+
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USER }}
+          password: ${{ secrets.QUAY_PASS }}
+
