@@ -1,15 +1,7 @@
-ARG UBUNTU_DISTRO=ubuntu22.04
-ARG CUDA_VERSION=12.0.1
-
-####################### Nvidia CUDA Base Image #######################
-FROM nvidia/cuda:${CUDA_VERSION}-devel-${UBUNTU_DISTRO} as base
-
-# Save Environment Properties
-ENV CUDA_VERSION=${CUDA_VERSION}
-ENV UBUNTU_DISTRO=${UBUNTU_DISTRO}
+ARG GENERIC_IMAGE
 
 ########################## Install ROS2 Core ##########################
-FROM base as core
+FROM ${GENERIC_IMAGE} as core
 
 # setup timezone
 RUN echo 'Etc/UTC' > /etc/timezone && \
@@ -39,12 +31,12 @@ RUN echo "deb [arch=$(dpkg --print-architecture) \
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
-ARG ROS_DISTRO=humble
+ARG ROS_DISTRO
 ENV ROS_DISTRO=${ROS_DISTRO}
 
 # install ros2 core packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-$ROS_DISTRO-ros-core=0.10.0-1* \
+    ros-$ROS_DISTRO-ros-core \
     && rm -rf /var/lib/apt/lists/*
 
 ######### Install ROS2 Developer Tools (rosdep, colcon, vcstools) #########
@@ -74,5 +66,5 @@ RUN colcon mixin add default \
 
 # install ros2 base packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-$ROS_DISTRO-ros-base=0.10.0-1* \
+    ros-$ROS_DISTRO-ros-base \
     && rm -rf /var/lib/apt/lists/*
