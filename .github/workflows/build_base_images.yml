@@ -10,6 +10,7 @@ jobs:
 
     outputs:
       registry: ${{ steps.docker-environment.outputs.registry }}
+      repository: ${{ steps.docker-environment.outputs.repository }}
 
     steps:
       - name: Checkout Repository
@@ -43,6 +44,7 @@ jobs:
 
     env:
       DOCKER_REGISTRY: ${{ needs.setup-environment.outputs.registry }}
+      DOCKER_REPOSITORY: ${{ needs.setup-environment.outputs.repository }}
 
     strategy:
       fail-fast: false
@@ -60,7 +62,7 @@ jobs:
       - name: Construct Registry URL
         id: construct-registry-url
         run: |
-          echo "url=${{ env.DOCKER_REGISTRY }}/base:${{ matrix.tag }}" \
+          echo "url=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}/base:${{ matrix.tag }}" \
           >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
