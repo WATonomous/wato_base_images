@@ -10,6 +10,8 @@ Must be ran manually in the Actions section of this repository.
 2. Click `Build Monorepo Base Images`
 3. Click `Run workflow` and wait for all the images to be build and pushed to the registry!
 
-
 ## To Edit the registry url
 Located in [docker_context.sh](./.github/templates/docker_context/docker_context.sh)
+
+## To Edit what images are made
+They are defined in a json format at [base_iamge_config.json](./.github/include/base_image_config.json)
